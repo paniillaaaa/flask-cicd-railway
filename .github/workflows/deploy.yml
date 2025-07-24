@@ -13,16 +13,10 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js (for Railway CLI)
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
-
     - name: Install Railway CLI
       run: npm install -g railway
 
-    - name: Deploy to Railway
+    - name: Deploy using Railway CLI
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      run: |
-        railway up --yes
+      run: railway up --yes --service web
