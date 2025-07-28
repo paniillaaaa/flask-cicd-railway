@@ -1,22 +1,22 @@
-from flask import Flask, render_template
+from flask import Flask
 import os
 import psycopg2
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def index():
-    db_url = os.environ.get("DATABASE_URL")
-    if db_url:
-        try:
-            conn = psycopg2.connect(db_url)
-            cur = conn.cursor()
-            cur.execute("SELECT version();")
-            db_version = cur.fetchone()
-            return f"Connected to PostgreSQL: {db_version[0]}"
-        except Exception as e:
-            return f"Database connection error: {e}"
-    return render_template("index.html")
+    try:
+        db_url = os.environ['DATABASE_URL']
+        conn = psycopg2.connect(db_url, sslmode='require')
+        cur = conn.cursor()
+        cur.execute('SELECT version();')
+        db_version = cur.fetchone()
+        cur.close()
+        conn.close()
+        return f"✅ Connected to DB: {db_version}"
+    except Exception as e:
+        return f"❌ DB Connection Failed: {str(e)}"
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
